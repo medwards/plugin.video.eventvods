@@ -1,0 +1,21 @@
+eSports Event VODs
+==================
+
+Kodi Video Add On for eSports VODs listed on VOD subreddits like
+[LoLeventVoDs](http://www.reddit.com/r/loleventvods).
+
+Development
+-----------
+
+In a new virtualenv you will need:  
+`pip install xbmcswift2 requests`
+
+Use xbmcswift2 to test screens:  
+`xbmcswift2 run crawl`  
+`xbmcswift2 run interactive`  
+`xbmcswift2 run PAGE_URL`
+
+Eventually these will be run as unit tests.
+
+For manual testing:  
+```ln -s `pwd` ~/.kodi/addons```
