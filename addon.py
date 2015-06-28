@@ -59,6 +59,18 @@ def show_matches(game, submission):
             match_ui_elements.append(element)
     return match_ui_elements
 
+@plugin.route('/play/youtube/<video_id>')
+def youtube_play_match(video_id):
+    # maybe accept the url and then figure out the player then?
+    url = 'plugin://plugin.video.youtube/?action=play_video&videoid=%s' % video_id
+    plugin.set_resolved_url(url)
+
+@plugin.route('/play/twitch/<video_id>')
+def twitch_play_match(video_id):
+    # maybe accept the url and then figure out the player then?
+    url = 'plugin://plugin.video.twitch/playVideo/%s' % video_id
+    plugin.set_resolved_url(url)
+
 def parse_matches(reddit_text):
     # dummy value for now
     lines = reddit_text.split('\n')
@@ -99,7 +111,7 @@ def parse_matches(reddit_text):
             if youtube_index:
                 match['YouTube'] = extract_youtube_id(extract_url(match_data[youtube_index]))
             if twitch_index:
-                match['Twitch'] = extract_url(match_data[twitch_index])
+                match['Twitch'] = extract_twitch_id(extract_url(match_data[twitch_index]))
             if highlights_index:
                 match['Highlights'] = extract_youtube_id(extract_url(match_data[highlights_index]))
 
@@ -135,12 +147,12 @@ def extract_youtube_id(url):
     elif result.netloc == 'youtu.be':  # used an URL shortener, thankfully ID matches
         return result.path.strip('/')
 
-
-@plugin.route('/play/youtube/<video_id>')
-def youtube_play_match(video_id):
-    # maybe accept the url and then figure out the player then?
-    url = 'plugin://plugin.video.youtube/?action=play_video&videoid=%s' % video_id
-    plugin.set_resolved_url(url)
+def extract_twitch_id(url):
+    result = urlparse.urlparse(url)
+    path = result.path.split('/')
+    if path[-2] in ['v', 'a', 'c']:
+        twitch_id = '%s%s' % (path[-2], path[-1]
+        return twitch_id
 
 if __name__ == '__main__':
     plugin.run()
