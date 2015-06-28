@@ -23,12 +23,23 @@ def show_games():
 def show_posts(game):
     client = praw.Reddit(user_agent="kodi_plugin.video.eventvods")
     subreddit_stickied_post = client.get_subreddit(subreddits[game]).get_sticky()
-    post = {
+    sticky = {
         'label': subreddit_stickied_post.title,
         'path': plugin.url_for('show_matches', game=game, submission=subreddit_stickied_post.id)
     }
 
-    return [post]
+    other_posts = client.get_subreddit(subreddits[game]).get_new()
+
+    events = [sticky]
+    for post in other_posts:
+        event = {
+            'label': post.title,
+            'path': plugin.url_for('show_matches', game=game, submission=post.id)
+        }
+        if event not in events:
+            events.append(event)
+
+    return events
 
 @plugin.route('/show_matches/<game>/<submission>')
 def show_matches(game, submission):
