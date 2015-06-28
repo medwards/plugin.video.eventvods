@@ -6,7 +6,9 @@ plugin = Plugin()
 
 # master listing of games /w subreddits
 # need to exempt League because Riot has a proper API for them
-games = {'League of Legends': {'subreddit': 'LoLeventVoDs'},
+games = {
+         'League of Legends': {'subreddit': 'LoLeventVoDs'},
+         #'League of Legends': {'api': 'lolesports'},  # lolesports API does bad caching on /match so its not useable right now
          'Counter-Strike: Global Offensive': {'subreddit': 'cseventvods'}
         }
 
@@ -18,12 +20,18 @@ def show_games():
 
 @plugin.route('/show_posts/<game>')
 def show_posts(game):
-    if 'subreddit' in games[game]:
+    if 'api' in games[game]:
+        events = api.build_events_from_api(plugin, game, games[game]['api'])
+    elif 'subreddit' in games[game]:
         events = build_events_from_subreddit(plugin, game, games[game]['subreddit'])
     else:
         events = []
 
     return events
+
+@plugin.route('/show_riot_api_tournament/<tournament>')
+def show_riot_api_tournament(tournament):
+    return api.build_games(plugin, tournament)
 
 @plugin.route('/show_matches/<game>/<submission>')
 def show_matches(game, submission):
