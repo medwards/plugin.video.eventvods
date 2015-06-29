@@ -7,7 +7,10 @@ plugin = Plugin()
 # master listing of games /w subreddits
 # need to exempt League because Riot has a proper API for them
 games = {
-        'League of Legends': {'subreddit': 'LoLeventVoDs', 'api': 'lolesports'},
+        'League of Legends': {'subreddit': 'LoLeventVoDs',
+                              'api': 'lolesports',
+                              'twitch_streams': {'EN': ['riotgames', 'riotgames2']}  # Snipe from API?
+                             },
          'Counter-Strike: Global Offensive': {'subreddit': 'cseventvods'}
         }
 
@@ -19,8 +22,14 @@ def show_games():
 
 @plugin.route('/tournament/<game>/reddit')
 def show_reddit_tournaments(game):
+    streams = [{'label': 'STREAM %s' % stream,
+                'path': plugin.url_for('twitch_play_stream', stream=stream),
+                'is_playable': True
+               }
+               for stream in games[game].get('twitch_streams', {'EN': []})['EN']]
     events = reddit.build_tournaments(plugin, game, games[game]['subreddit'])
-    return events
+    streams.extend(events)
+    return streams
 
 @plugin.route('/tournament/<game>/api')
 def show_api_tournaments(game):
@@ -43,10 +52,16 @@ def youtube_play_match(video_id):
     url = 'plugin://plugin.video.youtube/?action=play_video&videoid=%s' % video_id
     plugin.set_resolved_url(url)
 
-@plugin.route('/play/twitch/<video_id>')
+@plugin.route('/play/twitch/video/<video_id>')
 def twitch_play_match(video_id):
     # maybe accept the url and then figure out the player then?
     url = 'plugin://plugin.video.twitch/playVideo/%s' % video_id
+    plugin.set_resolved_url(url)
+
+@plugin.route('/play/twitch/stream/<stream>')
+def twitch_play_stream(stream):
+    # maybe accept the url and then figure out the player then?
+    url = 'plugin://plugin.video.twitch/playLive/%s' % stream
     plugin.set_resolved_url(url)
 
 if __name__ == '__main__':
