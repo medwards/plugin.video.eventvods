@@ -53,6 +53,7 @@ def parse_matches(reddit_text):
             day = day.replace('^th', '')
             day = day.replace('^st', '')
             day = day.replace('^rd', '')
+            in_table = False
         if line.startswith('|#|'):  # found a header
             header = line.split('|')
             if not header[0]:  # empty first element, nuke it
@@ -93,7 +94,10 @@ def index_safely(the_list, elem):
         return None
 
 def team_name(text):
-    result = re.search('\*\*(.*)\*\*', text)
+    result = re.search('\*\*(.*)\*\*', text)  # look for bolded names
+    if result and result.groups():
+        return result.groups()[0]
+    result = re.search('\(/s\s?"(.*)"\)', text)  # look for spoiler covered names
     if result and result.groups():
         return result.groups()[0]
     text = re.sub('\((.*)\)', '', text)  # clean up stuff in parens

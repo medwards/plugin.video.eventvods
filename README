@@ -13,10 +13,10 @@ In a new virtualenv you will need:
 Testing
 -------
 
-Make sure you have nose:  
-`pip install nose`  
-`nosetests`  
+Make sure you have nose and mock:  
+`pip install nose mock`  
 `nosetests -a '!slow'`
+`nosetests`  
 
 Use xbmcswift2 to investigate screens:  
 `xbmcswift2 run crawl`  
