@@ -11,7 +11,9 @@ games = {
                               'api': 'lolesports',
                               'twitch_streams': {'EN': ['riotgames', 'riotgames2']}  # Snipe from API?
                              },
-         'Counter-Strike: Global Offensive': {'subreddit': 'cseventvods'}
+         'Counter-Strike: Global Offensive': {'subreddit': 'cseventvods'},
+         #'HearthStone': {'subreddit': 'hearthstonevods'},
+         #'StarCraft': {'subreddit': 'SpoilerFreeSC'}
         }
 
 @plugin.route('/')
