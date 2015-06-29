@@ -3,18 +3,18 @@ import requests
 import urlparse
 
 API_HOST = 'http://na.lolesports.com/api/'
-def build_events_from_api(plugin, game, api_source):
+def build_tournaments(plugin, game, api_source):
     # assumes Riot API for now, extract later
     leagues = requests.get(urlparse.urljoin(API_HOST, 'league'), params={'parameters[method]': 'all'}, headers={'User-agent': 'Kodi plugin.video.eventvods'}).json()
     leagues = sorted(leagues['leagues'], key=operator.itemgetter('menuWeight'))
     events = [{'label': l['label'],
                'icon': l['leagueImage'],
                'thumbnail': l['leagueImage'],
-               'path': plugin.url_for('show_riot_api_tournament', tournament=l['defaultTournamentId'])}
+               'path': plugin.url_for('show_api_matches', game='League of Legends', tournament=l['defaultTournamentId'])}
               for l in leagues if l['noVods'] == 0 and l['defaultTournamentId'] != 0]
     return events
 
-def build_games(plugin, tournament):
+def build_matches(plugin, tournament):
     match_data = {}
     contestants = get_contestants(tournament)
     for contestant in contestants:

@@ -3,12 +3,12 @@ import re
 import urlparse
 from collections import OrderedDict
 
-def build_events_from_subreddit(plugin, game, subreddit):
+def build_tournaments(plugin, game, subreddit):
     client = praw.Reddit(user_agent="kodi_plugin.video.eventvods")
     subreddit_stickied_post = client.get_subreddit(subreddit).get_sticky()
     sticky = {
         'label': subreddit_stickied_post.title,
-        'path': plugin.url_for('show_matches', game=game, submission=subreddit_stickied_post.id)
+        'path': plugin.url_for('show_reddit_matches', game=game, submission=subreddit_stickied_post.id)
     }
 
     other_posts = client.get_subreddit(subreddit).get_new()
@@ -17,13 +17,13 @@ def build_events_from_subreddit(plugin, game, subreddit):
     for post in other_posts:
         event = {
             'label': post.title,
-            'path': plugin.url_for('show_matches', game=game, submission=post.id)
+            'path': plugin.url_for('show_reddit_matches', game=game, submission=post.id)
         }
         if event not in events:
             events.append(event)
     return events
 
-def build_matches_from_subreddit_submission(plugin, game, submission):
+def build_matches(plugin, game, submission):
     client = praw.Reddit(user_agent="kodi_plugin.video.eventvods")
     submission = client.get_submission(submission_id=submission)
     all_matches = parse_matches(submission.selftext)
