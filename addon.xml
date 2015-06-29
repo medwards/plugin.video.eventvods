@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.eventvods" name="eventvods" version="0.1" provider-name="Michael Edwards (medwards)">
+<addon id="plugin.video.eventvods" name="eventvods" version="0.2" provider-name="Michael Edwards (medwards)">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
     <import addon="script.module.xbmcswift2" version="2.4.0"/>
@@ -12,7 +12,7 @@
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
     <language></language>
-    <summary>Summary for "eventvods"</summary>
-    <description>Description for "eventvods"</description>
+    <summary>eventvods lets you browse eSports matches</summary>
+    <description>eventvods lets you browse eSports matches</description>
   </extension>
 </addon>
