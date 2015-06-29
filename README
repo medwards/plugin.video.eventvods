@@ -10,12 +10,18 @@ Development
 In a new virtualenv you will need:  
 `pip install xbmcswift2 requests`
 
-Use xbmcswift2 to test screens:  
+Testing
+-------
+
+Make sure you have nose:  
+`pip install nose`  
+`nosetests`  
+`nosetests -a '!slow'`
+
+Use xbmcswift2 to investigate screens:  
 `xbmcswift2 run crawl`  
 `xbmcswift2 run interactive`  
 `xbmcswift2 run PAGE_URL`
 
-Eventually these will be run as unit tests.
-
-For manual testing:  
+Manual testing in Kodi:  
 ```ln -s `pwd` ~/.kodi/addons```
