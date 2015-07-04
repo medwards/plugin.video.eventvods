@@ -53,6 +53,7 @@ def parse_matches(reddit_text):
             day = day.replace('^th', '')
             day = day.replace('^st', '')
             day = day.replace('^rd', '')
+            day = day.replace('^nd', '')
             in_table = False
         if line.startswith('|#|'):  # found a header
             header = line.split('|')
