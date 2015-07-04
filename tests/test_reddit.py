@@ -77,8 +77,7 @@ G2 | **TDK** [](#tdk) | vs | [](#clg) **CLG** | [Picks & Bans](http://www.twitch
         assert_equals(expected, matches)
 
     @mock.patch('praw.Reddit')
-    def test_builds_gfinity_masters_matches(self, reddit_mock):
-        # TODO: Rename once defect source identified
+    def test_builds_gfinity_masters_with_spoilers(self, reddit_mock):
         submission_mock = mock.Mock()
         submission_mock.selftext = """
 * **Gfinity Summer Masters I**
@@ -148,6 +147,27 @@ K3|Mirage|[Winner of E](/s "NiP")|vs|[Winner of J](/s "Mouz")|[**ENG**](http://c
                      'path': u'plugin://plugin.video.eventvods/play/youtube/lFTLVL2QdwY',
                      'is_playable': True},
                    ]
-        from pprint import pprint
         assert_equals(expected, matches)
 
+    @mock.patch('praw.Reddit')
+    def test_build_na_challenger_series_with_messy_formatting(self, reddit_mock):
+        # Youtube instead of YouTube, changed markers
+        submission_mock = mock.Mock()
+        submission_mock.selftext = """
+####Week 2, Day 2 - Wednesday, July 2^nd
+
+|  | Team 1 | vs | Team 2 | Youtube | Youtube
+| :--: | :--: | :--: | :--: | :--: | :--:
+| C1 [](http://www.table_title.com "W2D2, July 2nd") | **VTX**| vs | **C9T** | [Picks & Bans](https://www.youtube.com/watch?v=90xt1QCHLOU) | [Game Start](https://www.youtube.com/watch?v=90xt1QCHLOU&t=7m27s)
+"""
+        client_mock = reddit_mock.return_value
+        client_mock.get_submission.return_value = submission_mock
+
+        from addon import plugin
+        from resources.lib import reddit
+        matches = reddit.build_matches(plugin, 'League of Legends', '3b77pn')
+
+        expected = [{'label': 'VTX vs C9T - Week 2, Day 2 - Wednesday, July 2',
+                     'path': 'plugin://plugin.video.eventvods/play/youtube/90xt1QCHLOU',
+                     'is_playable': True}]
+        assert_equals(expected, matches)

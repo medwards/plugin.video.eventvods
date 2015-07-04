@@ -55,15 +55,16 @@ def parse_matches(reddit_text):
             day = day.replace('^rd', '')
             day = day.replace('^nd', '')
             in_table = False
-        if line.startswith('|#|'):  # found a header
-            header = line.split('|')
-            if not header[0]:  # empty first element, nuke it
-                header = header[1:]
-            team_1_index = header.index('Team 1')
-            team_2_index = header.index('Team 2')
-            youtube_index = index_safely(header, 'YouTube')
-            twitch_index = index_safely(header, 'Twitch')
-            highlights_index = index_safely(header, 'Highlights')
+        if re.search('\|([\s#]*)\|', line):  # found header
+            line = line.lower()
+            header = map(lambda h: h.strip(), line.split('|'))
+            if line.startswith('|'):
+                header = header[1:]  # leading pipe will cause an extra blank element
+            team_1_index = header.index('team 1')
+            team_2_index = header.index('team 2')
+            youtube_index = index_safely(header, 'youtube')
+            twitch_index = index_safely(header, 'twitch')
+            highlights_index = index_safely(header, 'highlights')
             in_table = True
             continue
         if in_table:
@@ -73,7 +74,9 @@ def parse_matches(reddit_text):
                 continue
 
             match_data = line.split('|')
-            if line.startswith(':--:') or len(match_data) != len(header):  # dunno what this is, so skip it
+            if line.startswith('|'):
+                match_data = match_data[1:]  # leading pipe will cause an extra blank element
+            if ':--:' in line or len(match_data) != len(header):  # dunno what this is, so skip it
                 continue
 
             match = {'Team 1': team_name(match_data[team_1_index]),
