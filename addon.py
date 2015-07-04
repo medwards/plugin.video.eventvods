@@ -22,7 +22,7 @@ def show_games():
                   for name in games]
     return game_items
 
-@plugin.route('/tournament/<game>/reddit')
+@plugin.cached_route('/tournament/<game>/reddit')
 def show_reddit_tournaments(game):
     streams = [{'label': 'STREAM %s' % stream,
                 'path': plugin.url_for('twitch_play_stream', stream=stream),
