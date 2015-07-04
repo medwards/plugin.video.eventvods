@@ -32,8 +32,11 @@ def build_matches(plugin, game, submission):
         for match in matches:
             if not match.get('YouTube', None):  # some don't seem to have anything
                 continue
+            series = ''
+            if match.get('series_number'):
+                series = 'Game %s - ' % match['series_number']
             element = {
-                'label': '%s vs %s - %s' % (match['Team 1'], match['Team 2'], day),
+                'label': '%s%s vs %s - %s' % (series, match['Team 1'], match['Team 2'], day),
                 'path': plugin.url_for('youtube_play_match', video_id=match['YouTube']),
                 'is_playable': True
             }
@@ -60,8 +63,11 @@ def parse_matches(reddit_text):
             header = map(lambda h: h.strip(), line.split('|'))
             if line.startswith('|'):
                 header = header[1:]  # leading pipe will cause an extra blank element
-            team_1_index = header.index('team 1')
-            team_2_index = header.index('team 2')
+            try:
+                team_1_index = header.index('team 1')
+                team_2_index = header.index('team 2')
+            except ValueError: # indexes don't exist
+                pass
             youtube_index = index_safely(header, 'youtube')
             twitch_index = index_safely(header, 'twitch')
             highlights_index = index_safely(header, 'highlights')
@@ -79,8 +85,18 @@ def parse_matches(reddit_text):
             if ':--:' in line or len(match_data) != len(header):  # dunno what this is, so skip it
                 continue
 
-            match = {'Team 1': team_name(match_data[team_1_index]),
-                     'Team 2': team_name(match_data[team_2_index])}
+            team1 = team_name(match_data[team_1_index])
+            team2 = team_name(match_data[team_2_index])
+            match = {'Team 1': team1,
+                     'Team 2': team2}
+            if matches.get(day, []):  # check for a series
+                previous_match = matches[day][-1]
+                previous_teams = (previous_match['Team 1'], previous_match['Team 2'])
+                if team1 in previous_teams and team2 in previous_teams:
+                    if not previous_match.get('series_number'):
+                        previous_match['series_number'] = 1
+                    match['series_number'] = previous_match['series_number'] + 1
+
             if youtube_index:
                 match['YouTube'] = extract_youtube_id(extract_url(match_data[youtube_index]))
             if twitch_index:

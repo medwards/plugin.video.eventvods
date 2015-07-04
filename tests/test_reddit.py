@@ -128,22 +128,22 @@ K3|Mirage|[Winner of E](/s "NiP")|vs|[Winner of J](/s "Mouz")|[**ENG**](http://c
         from resources.lib import reddit
         matches = reddit.build_matches(plugin, 'Hyped eSport', 'whatever')
 
-        expected = [{'label': 'Titan vs Dignitas - Day 1, Friday - June 26',
+        expected = [{'label': 'Game 1 - Titan vs Dignitas - Day 1, Friday - June 26',
                      'path': 'plugin://plugin.video.eventvods/play/youtube/zPhbYJ5nQ68',
                      'is_playable': True},
-                    {'label': 'Titan vs Dignitas - Day 1, Friday - June 26',
+                    {'label': 'Game 2 - Titan vs Dignitas - Day 1, Friday - June 26',
                      'path': 'plugin://plugin.video.eventvods/play/youtube/Q1ZiUgug_7E',
                      'is_playable': True},
-                    {'label': 'Dignitas vs NiP - Day 2, Saturday - June 27',
+                    {'label': 'Game 1 - Dignitas vs NiP - Day 2, Saturday - June 27',
                      'path': u'plugin://plugin.video.eventvods/play/youtube/IftovJWBBQs',
                      'is_playable': True},
-                    {'label': 'Dignitas vs NiP - Day 2, Saturday - June 27',
+                    {'label': 'Game 2 - Dignitas vs NiP - Day 2, Saturday - June 27',
                      'path': u'plugin://plugin.video.eventvods/play/youtube/Y_B2bTzbiBc',
                      'is_playable': True},
-                    {'label': 'NiP vs Mouz - Semi Finals and Finals',
+                    {'label': 'Game 1 - NiP vs Mouz - Semi Finals and Finals',
                      'path': u'plugin://plugin.video.eventvods/play/youtube/nba_w1oG33k',
                      'is_playable': True},
-                    {'label': 'NiP vs Mouz - Semi Finals and Finals',
+                    {'label': 'Game 2 - NiP vs Mouz - Semi Finals and Finals',
                      'path': u'plugin://plugin.video.eventvods/play/youtube/lFTLVL2QdwY',
                      'is_playable': True},
                    ]
@@ -170,4 +170,33 @@ K3|Mirage|[Winner of E](/s "NiP")|vs|[Winner of J](/s "Mouz")|[**ENG**](http://c
         expected = [{'label': 'VTX vs C9T - Week 2, Day 2 - Wednesday, July 2',
                      'path': 'plugin://plugin.video.eventvods/play/youtube/90xt1QCHLOU',
                      'is_playable': True}]
+        assert_equals(expected, matches)
+
+    @mock.patch('praw.Reddit')
+    def test_build_best_of_x_matches(self, reddit_mock):
+        submission_mock = mock.Mock()
+        submission_mock.selftext = """
+####9th Seed Series
+
+* **Full Stream:** [Twitch](http://www.twitch.tv/riotgames/b/653292092) / [Youtube](https://www.youtube.com/watch?v=5hmQpuDj_so)
+
+|#|Team 1| vs |Team 2|Twitch|Twitch|YouTube|YouTube|Analysis|Highlights|Discussion
+:--:|--:|:--:|:--|:--:|:--:|:--:|:--:|:--:|:--:|:--:
+A1 [](http://www.table_title.com "9th Seed - April 25th") | **GIA** [](#gia) | vs. | [](#rg) **RG**| [Picks & Bans](http://www.twitch.tv/riotgames/b/653292092?t=1h15m58s) | [Game Start](http://www.twitch.tv/riotgames/b/653292092?t=1h22m16s) | [Picks & Bans](https://www.youtube.com/watch?v=3PE-OyKo31g&t=15m27s) | [Game Start](https://www.youtube.com/watch?v=3PE-OyKo31g&t=21m48s) | [Analysis](https://www.youtube.com/watch?v=3PE-OyKo31g&t=58m42s) | [Highlights](https://www.youtube.com/watch?v=l1jsz2mfTbI) | -
+A2 | **RG** [](#rg) | vs. | [](#gia) **GIA** | [Picks & Bans](http://www.twitch.tv/riotgames/b/653292092?t=2h09m55s) | [Game Start](http://www.twitch.tv/riotgames/b/653292092?t=2h15m47s) | [Picks & Bans](https://www.youtube.com/watch?v=SIDP8cAC5Yw&t=3m44s) | [Game Start](https://www.youtube.com/watch?v=SIDP8cAC5Yw&t=9m34s) | [Analysis](https://www.youtube.com/watch?v=SIDP8cAC5Yw&t=44m44s) | [Highlights](https://www.youtube.com/watch?v=xZRQYVObxfQ) | -
+"""
+
+        client_mock = reddit_mock.return_value
+        client_mock.get_submission.return_value = submission_mock
+
+        from addon import plugin
+        from resources.lib import reddit
+        matches = reddit.build_matches(plugin, 'League of Legends', '33t319')
+
+        expected = [{'path': u'plugin://plugin.video.eventvods/play/youtube/3PE-OyKo31g',
+                     'is_playable': True,
+                     'label': u'Game 1 - GIA vs RG - 9th Seed Series'},
+                    {'path': u'plugin://plugin.video.eventvods/play/youtube/SIDP8cAC5Yw',
+                     'is_playable': True,
+                     'label': u'Game 2 - RG vs GIA - 9th Seed Series'}]
         assert_equals(expected, matches)
