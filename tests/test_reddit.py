@@ -37,8 +37,7 @@ class TournamentsUnitTest(unittest.TestCase):
 class MatchesUnitTest(unittest.TestCase):
     @mock.patch('praw.Reddit')
     def test_builds_matches(self, reddit_mock):
-        submission_mock = mock.Mock()
-        submission_mock.selftext = """
+        submission_text = """
 ---
 
 ##Week 4, Day 1 - Saturday, June 20^th
@@ -60,9 +59,7 @@ G2 | **TDK** [](#tdk) | vs | [](#clg) **CLG** | [Picks & Bans](http://www.twitch
 * **Recommended Games:** [Strawpoll](http://strawpoll.me/4691377)
 *Covered by /u/Punistick*
         """
-
-        client_mock = reddit_mock.return_value
-        client_mock.get_submission.return_value = submission_mock
+        mock_submission_text(reddit_mock, submission_text)
 
         from addon import plugin
         from resources.lib import reddit
@@ -78,8 +75,7 @@ G2 | **TDK** [](#tdk) | vs | [](#clg) **CLG** | [Picks & Bans](http://www.twitch
 
     @mock.patch('praw.Reddit')
     def test_builds_gfinity_masters_with_spoilers(self, reddit_mock):
-        submission_mock = mock.Mock()
-        submission_mock.selftext = """
+        submission_text = """
 * **Gfinity Summer Masters I**
 * **Date:** June 26th - 28th
 * **Stream:** [Twitch](http://www.twitch.tv/gfinitytv)
@@ -120,9 +116,7 @@ K3|Mirage|[Winner of E](/s "NiP")|vs|[Winner of J](/s "Mouz")|[**ENG**](http://c
 *Covered by: /u/iPlain*
 
         """
-
-        client_mock = reddit_mock.return_value
-        client_mock.get_submission.return_value = submission_mock
+        mock_submission_text(reddit_mock, submission_text)
 
         from addon import plugin
         from resources.lib import reddit
@@ -152,16 +146,14 @@ K3|Mirage|[Winner of E](/s "NiP")|vs|[Winner of J](/s "Mouz")|[**ENG**](http://c
     @mock.patch('praw.Reddit')
     def test_build_na_challenger_series_with_messy_formatting(self, reddit_mock):
         # Youtube instead of YouTube, changed markers
-        submission_mock = mock.Mock()
-        submission_mock.selftext = """
+        submission_text = """
 ####Week 2, Day 2 - Wednesday, July 2^nd
 
 |  | Team 1 | vs | Team 2 | Youtube | Youtube
 | :--: | :--: | :--: | :--: | :--: | :--:
 | C1 [](http://www.table_title.com "W2D2, July 2nd") | **VTX**| vs | **C9T** | [Picks & Bans](https://www.youtube.com/watch?v=90xt1QCHLOU) | [Game Start](https://www.youtube.com/watch?v=90xt1QCHLOU&t=7m27s)
 """
-        client_mock = reddit_mock.return_value
-        client_mock.get_submission.return_value = submission_mock
+        mock_submission_text(reddit_mock, submission_text)
 
         from addon import plugin
         from resources.lib import reddit
@@ -174,8 +166,7 @@ K3|Mirage|[Winner of E](/s "NiP")|vs|[Winner of J](/s "Mouz")|[**ENG**](http://c
 
     @mock.patch('praw.Reddit')
     def test_build_best_of_x_matches(self, reddit_mock):
-        submission_mock = mock.Mock()
-        submission_mock.selftext = """
+        submission_text = """
 ####9th Seed Series
 
 * **Full Stream:** [Twitch](http://www.twitch.tv/riotgames/b/653292092) / [Youtube](https://www.youtube.com/watch?v=5hmQpuDj_so)
@@ -185,9 +176,7 @@ K3|Mirage|[Winner of E](/s "NiP")|vs|[Winner of J](/s "Mouz")|[**ENG**](http://c
 A1 [](http://www.table_title.com "9th Seed - April 25th") | **GIA** [](#gia) | vs. | [](#rg) **RG**| [Picks & Bans](http://www.twitch.tv/riotgames/b/653292092?t=1h15m58s) | [Game Start](http://www.twitch.tv/riotgames/b/653292092?t=1h22m16s) | [Picks & Bans](https://www.youtube.com/watch?v=3PE-OyKo31g&t=15m27s) | [Game Start](https://www.youtube.com/watch?v=3PE-OyKo31g&t=21m48s) | [Analysis](https://www.youtube.com/watch?v=3PE-OyKo31g&t=58m42s) | [Highlights](https://www.youtube.com/watch?v=l1jsz2mfTbI) | -
 A2 | **RG** [](#rg) | vs. | [](#gia) **GIA** | [Picks & Bans](http://www.twitch.tv/riotgames/b/653292092?t=2h09m55s) | [Game Start](http://www.twitch.tv/riotgames/b/653292092?t=2h15m47s) | [Picks & Bans](https://www.youtube.com/watch?v=SIDP8cAC5Yw&t=3m44s) | [Game Start](https://www.youtube.com/watch?v=SIDP8cAC5Yw&t=9m34s) | [Analysis](https://www.youtube.com/watch?v=SIDP8cAC5Yw&t=44m44s) | [Highlights](https://www.youtube.com/watch?v=xZRQYVObxfQ) | -
 """
-
-        client_mock = reddit_mock.return_value
-        client_mock.get_submission.return_value = submission_mock
+        mock_submission_text(reddit_mock, submission_text)
 
         from addon import plugin
         from resources.lib import reddit
@@ -200,3 +189,10 @@ A2 | **RG** [](#rg) | vs. | [](#gia) **GIA** | [Picks & Bans](http://www.twitch.
                      'is_playable': True,
                      'label': u'Game 2 - RG vs GIA - 9th Seed Series'}]
         assert_equals(expected, matches)
+
+def mock_submission_text(reddit_mock, selftext):
+    submission_mock = mock.Mock()
+    submission_mock.selftext = selftext
+
+    client_mock = reddit_mock.return_value
+    client_mock.get_submission.return_value = submission_mock
